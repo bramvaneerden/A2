@@ -186,76 +186,84 @@ class IntelDevice:
 
         """
        
-
-        # print the subrectangle that we are searching over
-        for i in range(y_from, y_to+1):
-            print(self.loc_grid[i][x_from:x_to+1])
-
-        # check if value is in the subrectangle we are searching over
-        # loop over cells in this subproblem
-        if (y_from or x_from != 0) or (y_to != self.height-1) or (x_to != self.width -1):
-          print("searching")
-          for i in range(y_from, y_to+1):
-            for j in range(x_from, x_to+1):
-              if self.loc_grid[i][j] == value:
-                print("found")
-                print(i,j)
-                return (i,j)
-              
         
-
-
-        # find middle location in the subrectangle
-        x_mid = (x_from + x_to) // 2
-        y_mid = (y_from + y_to) // 2
-
-        # print(x_mid, y_mid)
-
+        # print("supposed to find: ", value)
+        # # print the subrectangle that we are searching over
+        # for i in range(y_from, y_to+1):
+        #     print(self.loc_grid[i][x_from:x_to+1])
+            
+        # If there are no more subrectangles to search over, return None
+        if x_from > x_to or y_from > y_to:
+           return None
+        
+        # find middle location of grid
+        x_mid = self.width // 2
+        y_mid = self.height // 2
+ 
         # check if the value is in the middle location
         if self.loc_grid[y_mid][x_mid] == value:
             return (y_mid, x_mid)
         
-
+        # if the value is bigger than the middle location, search top right subrectangle and rectangle below middle
         if self.loc_grid[y_mid][x_mid] < value:
-          print("less than")
-          print(value, x_from, x_to, y_from, y_to)  
+          
           # search top right subrectangle
-          if x_mid != x_to and y_mid != y_from:
-            self.divconq_search(value, x_mid, x_to, y_mid, y_to)
+          if x_from == 0 :
+            self.divconq_search(value, x_mid, x_to, y_from, y_mid)
 
-          # top right done -> search rectangle below middle
-         
+          # code to search the current subrectangle. 
+          # We pass through this loop twice, once for the top right subrectangle and once for the rectangle below the middle, if necessary
+          i = y_from
+          j = x_from
+          while i <= y_to:
+            while j <= x_to:
+                if self.loc_grid[i][j] == value:
+                    return (i, j)
+                j += 1
+            i += 1
+            j = x_from
 
+          # Value not found in top right subrectangle, so search rectangle below middle
           if x_from >= x_mid and y_from >= y_mid:
+              # Set values back to original values
               x_from = 0
               x_to = self.width -1
               y_from = 0
               y_to = self.height -1
-              self.divconq_search(value, x_from, x_mid, y_mid+1, y_to)
-            
-        if self.loc_grid[y_mid][x_mid] > value:
-          print("greater than")    
-          # print(value, x_from, x_mid-1, y_from, y_mid) 
-
-          # search top right subrectangle
-          if x_mid != x_to and y_mid != y_from:
-            self.divconq_search(value, x_mid, x_to, y_mid, y_to)
-
-          # top right done -> search left vertical
+              # Recursively call function on the rectangle below the middle
+              self.divconq_search(value, x_from, x_to, y_mid+1, y_to)
           
-          # print("x_from >= x_mid and y_from >= y_mid") 
-          # print(x_from, x_mid, y_from, y_mid)
-          # if x_from >= x_mid and y_from >= y_mid:
-          x_from = 0
-          # x_to = self.width -1
-          y_from = 0
-          y_to = self.height -1
-          print("through")
-          self.divconq_search(value, x_from, x_mid-1, y_from, y_to)
+          
+        # if the value is smaller than the middle location, search top right subrectangle and rectangle left of middle    
+        if self.loc_grid[y_mid][x_mid] > value:
+          # search top right subrectangle
+          if x_from == 0 :
+            # print("Xmid, xto")
+            # print(x_mid, x_to)
+            self.divconq_search(value, x_mid, x_to, y_from, y_mid)
 
-    
-            
+          # code to search the current subrectangle. 
+          # We pass through this loop twice, once for the top right subrectangle and once for the rectangle left of the middle, if necessary
+          i = y_from
+          j = x_from
+          while i <= y_to:
+            while j <= x_to:
+                if self.loc_grid[i][j] == value:
+                    return (i, j)
+                j += 1
+            i += 1
+            j = x_from
 
+          # Value not found in top right subrectangle, so search rectangle left of middle
+          if x_from != 0:
+            # Set values back to original values
+            x_from = 0
+            x_to = self.width -1
+            y_from = 0
+            y_to = self.height -1
+            # Recursively call function on the rectangle left of the middle
+            self.divconq_search(value, x_from, x_mid-1, y_from, y_to)
+  
     def start_search(self, value) -> str:
         """
         Non-recursive function that starts the recursive divide and conquer search function above. You can assume
