@@ -185,7 +185,7 @@ class IntelDevice:
           A tuple (y,x) specifying the location where the value was found (if the value occurs in the subrectangle)
 
         """
-        print(value, x_from, x_to, y_from, y_to)
+       
 
         # print the subrectangle that we are searching over
         for i in range(y_from, y_to+1):
@@ -193,13 +193,15 @@ class IntelDevice:
 
         # check if value is in the subrectangle we are searching over
         # loop over cells in this subproblem
-        for i in range(y_from, y_to+1):
-          for j in range(x_from, x_to+1):
-            if self.loc_grid[i][j] == value:
-              print("found")
-              print(i,j)
-              return (i,j)
-            
+        if (y_from or x_from != 0) or (y_to != self.height-1) or (x_to != self.width -1):
+          print("searching")
+          for i in range(y_from, y_to+1):
+            for j in range(x_from, x_to+1):
+              if self.loc_grid[i][j] == value:
+                print("found")
+                print(i,j)
+                return (i,j)
+              
         
 
 
@@ -215,25 +217,41 @@ class IntelDevice:
         
 
         if self.loc_grid[y_mid][x_mid] < value:
-          print("less than")  
+          print("less than")
+          print(value, x_from, x_to, y_from, y_to)  
           # search top right subrectangle
           if x_mid != x_to and y_mid != y_from:
             self.divconq_search(value, x_mid, x_to, y_mid, y_to)
 
-          # top right done
+          # top right done -> search rectangle below middle
+         
+
           if x_from >= x_mid and y_from >= y_mid:
-              self.divconq_search(value, x_mid+1, x_to, y_from, y_to)
+              x_from = 0
+              x_to = self.width -1
+              y_from = 0
+              y_to = self.height -1
+              self.divconq_search(value, x_from, x_mid, y_mid+1, y_to)
             
         if self.loc_grid[y_mid][x_mid] > value:
-          print("greater than")     
+          print("greater than")    
+          # print(value, x_from, x_mid-1, y_from, y_mid) 
 
           # search top right subrectangle
           if x_mid != x_to and y_mid != y_from:
-            self.divconq_search(value, x_mid, x_to, y_from, y_mid)
+            self.divconq_search(value, x_mid, x_to, y_mid, y_to)
 
           # top right done -> search left vertical
-          if x_from >= x_mid and y_from >= y_mid:
-              self.divconq_search(value, x_from, x_to, y_from, y_mid-1)
+          
+          # print("x_from >= x_mid and y_from >= y_mid") 
+          # print(x_from, x_mid, y_from, y_mid)
+          # if x_from >= x_mid and y_from >= y_mid:
+          x_from = 0
+          # x_to = self.width -1
+          y_from = 0
+          y_to = self.height -1
+          print("through")
+          self.divconq_search(value, x_from, x_mid-1, y_from, y_to)
 
     
             
