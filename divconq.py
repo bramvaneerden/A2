@@ -48,25 +48,18 @@ class IntelDevice:
         
         Returns: the encoded message
         """
-        # print(msg)
         
         # transform all characters in msg into their ordinal representation
         ordinals = [ord(x) for x in msg]
-        # print(ordinals)
-
-        # print("self.caesar_shift" + self.caesar_shift)
 
         # shift the ordinal representation by self.caesar_shift
         shifted_ordinals = [x + self.caesar_shift for x in ordinals]
-        # print(shifted_ordinals)
 
-        # transform the shifted ordinals into bitstrings and separate them by spaces
+        # transform the shifted ordinals into bitstrings
         bitstrings = ['{0:b}'.format(x) for x in shifted_ordinals]
-        # print(bitstrings)
 
         #separate the bitstrings by spaces
         encoded_msg = ' '.join(bitstrings)
-        # print(encoded_msg)
 
         return encoded_msg
 
@@ -80,22 +73,17 @@ class IntelDevice:
         
         Returns: the decoded message
         """
-        # print(msg)
         # transform the encoded message into a list of bitstrings
         bitstrings = msg.split(' ')
-        # print(bitstrings)
 
         # transform the bitstrings into their ordinal representation
         ordinals = [int(x, 2) for x in bitstrings]
-        # print(ordinals)
 
         # shift the ordinal representation by -self.caesar_shift
         shifted_ordinals = [x - self.caesar_shift for x in ordinals]
-        # print(shifted_ordinals)
 
         # transform the shifted ordinals into characters
         decoded_msg = ''.join([chr(x) for x in shifted_ordinals])
-        # print(decoded_msg)
 
         return decoded_msg
 
@@ -115,18 +103,14 @@ class IntelDevice:
         The function does not return anything. It simply fills the self.coordinate_to_location data structure with the right mapping.
         """
 
-        # print(self.enc_locations)
 
         # decode the encoded locations
         decoded_locations = [self.decode_message(x) for x in self.enc_locations]
-        # print(decoded_locations)
 
         # fill the self.coordinate_to_location data structure
         for i in range(self.height):
             for j in range(self.width):
                 self.coordinate_to_location[(i,j)] = decoded_locations[i*self.width + j]
-        
-        # print(self.coordinate_to_location)
         
 
 
@@ -143,18 +127,13 @@ class IntelDevice:
         The function does not return anything. It simply fills the self.loc_grid data structure with the decoded codes.
         """
 
-        # print (self.enc_codes)
-
         # decode the encoded codes
         decoded_codes = [self.decode_message(x) for x in self.enc_codes]
-        # print(decoded_codes)
 
         # fill the self.loc_grid data structure
         for i in range(self.height):
             for j in range(self.width):
                 self.loc_grid[i][j] = decoded_codes[i*self.width + j]
-
-        # print(self.loc_grid)
 
 
     def divconq_search(self, value: int, x_from: int, x_to: int, y_from: int, y_to: int) -> typing.Tuple[int, int]:
@@ -186,11 +165,6 @@ class IntelDevice:
 
         """
        
-        
-        # print("supposed to find: ", value)
-        # # print the subrectangle that we are searching over
-        # for i in range(y_from, y_to+1):
-        #     print(self.loc_grid[i][x_from:x_to+1])
             
         # If there are no more subrectangles to search over, return None
         if x_from > x_to or y_from > y_to:
@@ -238,8 +212,6 @@ class IntelDevice:
         if self.loc_grid[y_mid][x_mid] > value:
           # search top right subrectangle
           if x_from == 0 :
-            # print("Xmid, xto")
-            # print(x_mid, x_to)
             self.divconq_search(value, x_mid, x_to, y_from, y_mid)
 
           # code to search the current subrectangle. 
